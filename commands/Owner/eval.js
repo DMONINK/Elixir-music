@@ -1,64 +1,48 @@
-const { MessageEmbed } = require("discord.js");
-const { post } = require("node-superfetch");
-
+const {
+  MessageEmbed,
+  splitMessage
+} = require(`discord.js`);
+const config = require(`../../botconfig/config.json`);
+const ee = require(`../../botconfig/embed.json`);
+const emoji = require(`../../botconfig/emojis.json`);
+const {
+  inspect
+} = require(`util`);
 module.exports = {
-    name: "eval",
-    category: "Owner",
-    description: "Eval Code",
-    args: false,
-    usage: "<string>",
-    permission: [],
-    owner: true,
-    execute: async (message, args, client, prefix) => {
-       
-        const embed = new MessageEmbed()
-            .addField("Input", "```js\n" + args.join(" ") + "```");
-
-        try {
-            const code = args.join(" ");
-            if (!code) return message.channel.send("Please include the code.");
-            let evaled;
-
-            if (code.includes(`SECRET`) || code.includes(`TOKEN`) || code.includes("process.env")) {
-                evaled = "No, shut up, what will you do it with the token?";
-            } else {
-                evaled = await eval(code);
-            }
-
-            if (typeof evaled !== "string") evaled = await require("util").inspect(evaled, { depth: 0 });
-
-            let output = clean(evaled);
-            if (output.length > 1024) {
-               
-                const { body } = await post("https://hastebin.com/documents").send(output);
-                embed.addField("Output", `https://hastebin.com/${body.key}.js`).setColor(message.client.embedColor);
-              
-            } else {
-                embed.addField("Output", "```js\n" + output + "```").setColor(message.client.embedColor);
-            }
-
-            message.channel.send({embeds: [embed]});
-
-        } catch (error) {
-            let err = clean(error);
-            if (err.length > 1024) {
-               
-                const { body } = await post("https://hastebin.com/documents").send(err);
-                embed.addField("Output", `https://hastebin.com/${body.key}.js`).setColor("RED");
-            } else {
-                embed.addField("Output", "```js\n" + err + "```").setColor("RED");
-            }
-
-            message.channel.send({embeds: [embed]});
-        }
+  name: `eval`,
+  category: `Owner`,
+  aliases: [`evaluate`],
+  description: `eval Command`,
+  usage: `eval <CODE>`,
+  run: async (client, message, args, guildData, player, prefix) => {
+    if (!config.ownerIDS.includes(message.author.id)) {
+      const nope = new MessageEmbed()
+      .setColor(ee.wrongcolor)
+      .setDescription(`${emoji.msg.ERROR} You are not allowed to run this command! Only KenichiPlayZ is allowed to run this command`)
+      return message.channel.send({embeds: [nope]})
     }
-}
-
-function clean(string) {
-    if (typeof text === "string") {
-        return string.replace(/`/g, "`" + String.fromCharCode(8203))
-            .replace(/@/g, "@" + String.fromCharCode(8203))
-    } else {
-        return string;
+    if (!args[0]) {
+      let idk = new MessageEmbed()
+      .setColor(ee.wrongcolor)
+      .setDescription(`${emoji.msg.ERROR} You have to at least include one evaluation arguments`);
+      return message.channel.send({embeds: [idk]})
     }
-}
+    let evaled;
+    try {
+      if (args.join(` `).includes(`token`)) return  message.reply("Abbe sale!");
+
+      evaled = await eval(args.join(` `));
+      //make string out of the evaluation
+      let string = inspect(evaled);
+      //if the token is included return error
+      if (string.includes(client.token)) return message.reply("Abbe sale!");
+    } catch (e) {
+      console.log(String(e.stack).bgRed)
+      const emesdf = new MessageEmbed()
+      .setColor(ee.wrongcolor)
+      .setAuthor(`An Error Occurred`)
+      .setDescription(`\`\`\`${e.message}\`\`\``);
+      return message.channel.send({embeds: [emesdf]});
+    }
+  },
+};
