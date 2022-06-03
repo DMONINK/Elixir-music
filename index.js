@@ -1,92 +1,95 @@
-const Discord = require("discord.js"); 
-const { Intents, WebhookClient, MessageEmbed, MessageActionRow, MessageButton, Collection} = require("discord.js");
-const Enmap = require("enmap"); //this package is our Database! We will use it to save the data for ever!
-const app = require("express")
-const colors = require("colors"); 
-const fs = require("fs"); 
-require('discord-reply'); 
-const config = require("./botconfig/config.json");
-const emoji = require("./botconfig/emojis.json");
-const ee = require(`./botconfig/embed.json`);
-const fetch = require("node-fetch");
-const mongoose = require("mongoose")
-const { findOrCreateGuild } = require("./handlers/functions")
-const web = new WebhookClient({ url: 'https://discord.com/api/webhooks/909351507462328371/XO5JI0_8Ezxm5KQTvU234aC7U-fL0t3Y8uCiOPstwJA6OHkyGIUUawS_lmmN8RgMDBlA' }); 
-const { readdirSync } = require("fs")
-
-const intents = new Intents([ 
-  "GUILD_MEMBERS" 
-]);
-
-// Hello from the new soul bot lol
-
-const client = new Discord.Client({
-    intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_VOICE_STATES,
-        Intents.FLAGS.GUILD_MEMBERS,
-    ],
-    allowedMentions: { parse: ['users', 'roles'], repliedUser: true },
-    presence: {
-        status: "online",
-        activities: [{
-        name: "@Gaara",
-        type: "LISTENING"
-        }]
+const { Client, Collection } = require("discord.js");
+const array = [];
+const { readdirSync } = require("fs");
+const mongoose = require('mongoose');
+const { Database } = require("quickmongo");
+const { Manager } = require("erela.js");
+const Spotify = require("erela.js-spotify")
+const client = new Client({
+   intents: ["GUILDS", "GUILD_INVITES", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"],
+    allowedMentions: {
+        parse: ["everyone", "roles", "users"],
+        repliedUser: true
     },
-    ws: { intents },
-    fetchAllMembers: false,
-    restTimeOffset: 0,
-    shards: "auto",
-    restWsBridgetimeout: 100,
-    disableEveryone: true,
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION']
+    partials: ["CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION", "USER"]
+
 });
-require('http').createServer((req, res) =>res.end('Botisalive!')).listen(3000)
-require('events').EventEmitter.defaultMaxListeners = 100;
-process.setMaxListeners(100);
+module.exports = client;
+client.commands = new Collection();
+client.slashCommands = new Collection();
+client.config = require("./config.json");
+client.db = new Database(client.config.mongourl);
+client.owner = client.config.ownerID;
+client.prefix = client.config.prefix;
+client.embedColor = client.config.embedColor;
+client.aliases = new Collection();
+client.commands = new Collection();
+client.categories = readdirSync("./commands/");
+client.logger = require("./utils/logger.js");
+client.emoji = require("./utils/emoji.json");
 
-
-["clientvariables", "command", "events", "erelahandler"].forEach(handler => { 
-  require(`./handlers/${handler}`)(client);
+client.manager = new Manager({
+    nodes: client.config.nodes,
+    send: (id, payload) => {
+        const guild = client.guilds.cache.get(id);
+        if (guild) guild.shard.send(payload);
+    },
+    autoPlay: true,
+    plugins: [new Spotify({
+        clientID: client.config.clientID,
+        clientSecret: client.config.clientSecret,
+    })]
 });
 
+client.on("raw", (d) => client.manager.updateVoiceState(d));
+/**
+ * Mongodb connection
+ */
 
+<<<<<<< HEAD
 client.databaseCache = {};
 
 client.guildsData = require("./models/Guild"); // Guild mongoose model
 client.databaseCache.guilds = new Discord.Collection();
+client.emoji = require("./json/emoji.json");
 
 
 //login into the bot
 mongoose.connect(config.mongo, {
+=======
+const dbOptions = {
+>>>>>>> parent of c88fb0f (major)
   useNewUrlParser: true,
+  autoIndex: false,
+  poolSize: 5,
+  connectTimeoutMS: 10000,
+  family: 4,
   useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
-  }).then(() => {
-  //login to the bot
-  client.login(config.token)
-
-
-client.on("voiceStateUpdate", async (oldState, newState) => {
-    if (newState.channelId && newState.channel.type == "GUILD_STAGE_VOICE" && newState.guild.me.voice.suppress) {
-        try {
-            await newState.guild.me.voice.setSuppressed(false);
-        } catch (e) {
-            console.log(e)
-        }
-    }
-})
-
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isSelectMenu()) return;
+};
+  mongoose.connect(client.config.mongourl, dbOptions);
+  mongoose.set("useFindAndModify", false);
+  mongoose.Promise = global.Promise;
+	mongoose.connection.on('connected', () => {
+		client.logger.log('[DB] DATABASE CONNECTED', "ready");
+		});
+	mongoose.connection.on('err', (err) => {
+			console.log(`Mongoose connection error: \n ${err.stack}`, "error");
+		});
+	mongoose.connection.on('disconnected', () => {
+			console.log('Mongoose disconnected');
+		});
     
-    let options = interaction.values;
-    const funny = options[0]
+/**
+ * Error Handler
+ */
+client.on("disconnect", () => console.log("Bot is disconnecting..."))
+client.on("reconnecting", () => console.log("Bot reconnecting..."))
+client.on('warn', error => console.log(error));
+client.on('error', error => console.log(error));
+process.on('unhandledRejection', error => console.log(error));
+process.on('uncaughtException', error => console.log(error));
 
+<<<<<<< HEAD
     if(funny === 'first') {
         const embed1 = new MessageEmbed()
         .setThumbnail(ee.avatara)
@@ -426,7 +429,7 @@ client.on('guildCreate', async (guild) => {
     guildData.announce = true;
     guildData.save();
   
-    const texts = "Thanks for adding Gaara to your server! If you need help regarding the bot, you may reach us out at https://discord.gg/DZxEw7YvUk"
+    const texts = "Thanks for adding Gaara to your server! If you need help regarding the bot, you may reach us out at https://discord.gg/zvynSK7Crk"
     const guildembed = new Discord.MessageEmbed()
     .setTitle("Thank you for adding me in your server! ❤️")
     .setColor("#303037")
@@ -435,54 +438,39 @@ client.on('guildCreate', async (guild) => {
 You can change the prefix using ${prefix}prefix <New Prefix>\`\`\``);
  ownerlmao.send({content: texts, embeds: [guildembed]});
   } catch {/** */}
+=======
+/**
+ * Client Events
+ */
+readdirSync("./events/Client/").forEach(file => {
+    const event = require(`./events/Client/${file}`);
+    let eventName = file.split(".")[0];
+    client.logger.log(`Loading Events Client ${eventName}`, "event");
+    client.on(eventName, event.bind(null, client));
+>>>>>>> parent of c88fb0f (major)
 });
 
-client.on('guildDelete', async (guild) => {
-    try {
-        const owner = await guild.fetchOwner()
-        const embed = new Discord.MessageEmbed()
-        .setTitle("Left A Server")
-        .setColor("RED")
-        .setThumbnail(guild.iconURL())
-        .setDescription("<@768058720621821954> has Left  a server!")
-        .addField("**Server Name**", guild.name, true)
-        // This has an error ufff
-        .addField("**Owner**", `Tag - ${owner.user.tag}\nID - ${owner.id}`, true)
-        try { embed.addField("**Region**", guild.region, true) } catch {/** */}
+/**
+ * Erela Manager Events
+ */
+readdirSync("./events/Lavalink/").forEach(file => {
+    const event = require(`./events/Lavalink/${file}`);
+    let eventName = file.split(".")[0];
+    client.logger.log(`Loading Events Lavalink ${eventName}`, "event");
+    client.manager.on(eventName, event.bind(null, client));
+});
 
-      client.channels.cache.get("909107821096882196").send({ embeds: [embed] })
-    } catch (e) { console.log(e) }
+/**
+ * Import all commands
+ */
+readdirSync("./commands/").forEach(dir => {
+    const commandFiles = readdirSync(`./commands/${dir}/`).filter(f => f.endsWith('.js'));
+    for (const file of commandFiles) {
+        const command = require(`./commands/${dir}/${file}`);
+        client.logger.log(`Loading ${command.category} commands ${command.name}`, "cmd");
+        client.commands.set(command.name, command);
+    }
 });
 
 
-
-
- 
-
-
-
-     
-});
-
-
-
-
-process.on('unhandledRejection', (error) => {
-  web.send(`\`\`\`js\n${error.stack}\`\`\``)
-});
-process.on("uncaughtException", (err, origin) => {
-  web.send(`\`\`\`js\n${err.stack}\`\`\``)
-})
-process.on('uncaughtExceptionMonitor', (err, origin) => {
-  web.send(`\`\`\`js\n${err.stack}\`\`\``)
-});
-process.on('beforeExit', (code) => {
-  web.send(`\`\`\`js\n${code}\`\`\``)
-});
-process.on('exit', (code) => {
-  web.send(`\`\`\`js\n${code}\`\`\``)
-});
-process.on('multipleResolves', (type, promise, reason) => {
-}); 
-
-//uhh
+client.login(client.config.token);

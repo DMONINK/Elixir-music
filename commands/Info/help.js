@@ -58,7 +58,7 @@ module.exports = {
         }
         if (cmd.useage) {
           embed.addField("**Useage**", `\`${prefix}${cmd.useage}\``);
-          embed.setFooter("Elixir");
+          embed.setFooter("Gaara");
         }
         embed.setColor(ee.color)
         return message.channel.send({embeds: [embed]});
@@ -66,11 +66,11 @@ module.exports = {
 
         
     let helpmenu = new MessageEmbed()
-        .setAuthor(`Elixir Help Menu`, ee.footericon)
+        .setAuthor(`Gaara Help Menu`, ee.footericon)
         .setDescription(`
 **Hey ${message.author}, I am ${client.user}**.
  
-**Elixir is the easy-to-use Discord bot for all your needs.**
+**Gaara is the easy-to-use Discord bot for all your needs.**
 
         
 **${emoji.categories.AnimatedDiscord} Help related to Elxir's commands**
@@ -93,7 +93,7 @@ module.exports = {
         .addComponents(
             new MessageSelectMenu()
                 .setCustomId('helpop')
-                .setPlaceholder('❯ Elixir Help Menu!')
+                .setPlaceholder('❯ Gaara Help Menu!')
                 .addOptions([
                 {
                     label: 'Custom Playlist',
@@ -121,7 +121,7 @@ module.exports = {
                 },
                 {
                     label: 'Settings',
-                    description: 'Elixir Settings',
+                    description: 'Gaara Settings',
                     value: 'fifth',
                     emoji: emoji.categories.Settings
                 },

@@ -1,33 +1,36 @@
-const {
-  MessageEmbed
-} = require(`discord.js`);
-const config = require(`../../botconfig/config.json`);
-const ee = require(`../../botconfig/embed.json`);
-const emoji = require(`../../botconfig/emojis.json`);
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
-  name: `clearqueue`,
-  category: `Music`,
-  aliases: [`clearqu`],
-  description: `Cleares the Queue`,
-  usage: `clearqueue`,
-  cooldown: 10,
-  parameters: {"type":"music", "activeplayer": true, "previoussong": false},
-  run: async (client, message, args, guildData, player, prefix) => {
-    try {
-      //clear the QUEUE
-      player.queue.clear();
-      //Send Success Message
-      const iii = new MessageEmbed()
-      .setDescription(`${emoji.msg.cleared} The queue is now cleared.`)
-      .setColor("#2F3136")
-      return message.channel.send({embeds: [iii]});
-    } catch (e) {
-      console.log(String(e.stack).bgRed)
-			const emesdf = new MessageEmbed()
-			.setColor(ee.wrongcolor)
-			.setAuthor(`An Error Occurred`)
-			.setDescription(`\`\`\`${e.message}\`\`\``);
-			return message.channel.send({embeds: [emesdf]});
+    name: "clearqueue",
+    aliases: ["cq"],
+    category: "Music",
+  	description: "Clear Queue",
+	  args: false,
+    usage: "<Number of song in queue>",
+    permission: [],
+    owner: false,
+    player: true,
+    inVoiceChannel: true,
+    sameVoiceChannel: true,
+	 execute: async (message, args, client, prefix) => {
+  
+		const player = message.client.manager.get(message.guild.id);
+
+        if (!player.queue.current) {
+            let thing = new MessageEmbed()
+                .setColor("RED")
+                .setDescription("There is no music playing.");
+            return message.channel.send({embeds: [thing]});
+        }
+
+		player.queue.clear();
+
+		const emojieject = message.client.emoji.remove;
+
+		let thing = new MessageEmbed()
+			.setColor(message.client.embedColor)
+			.setTimestamp()
+			.setDescription(`${emojieject} Removed all songs from the queue`)
+			  return message.channel.send({embeds: [thing]});
     }
-  }
 };

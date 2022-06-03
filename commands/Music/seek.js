@@ -1,50 +1,61 @@
-const {
-  MessageEmbed
-} = require(`discord.js`);
-const config = require(`../../botconfig/config.json`);
-const ee = require(`../../botconfig/embed.json`);
-const emoji = require(`../../botconfig/emojis.json`);
-const {
-  createBar,
-  format
-} = require(`../../handlers/functions`);
+const { MessageEmbed } = require("discord.js");
+const { convertTime } = require('../../utils/convert.js')
+const ms = require('ms');
+
 module.exports = {
-  name: `seek`,
-  category: `Music`,
-  aliases: [`vol`],
-  description: `Changes the position(seek) of the Song`,
-  usage: `seek <Duration in Seconds>`,
-  parameters: {"type":"music", "activeplayer": true, "previoussong": false},
-  run: async (client, message, args, guildData, player, prefix) => {
-    try{
-      //if number is out of range return error
-      if (!player.queue.current) {
-        const no = new MessageEmbed()
-        .setColor(ee.wrongcolor)
-        .setDescription(`${emoji.msg.ERROR} There is nothing playing`)
-        return message.channel.send({embeds: [no]})
-      }
-      if (Number(args[0]) < 0 || Number(args[0]) >= player.queue.current.duration / 1000 || isNaN(args[0])) {
-        const ttt = new MessageEmbed()
-        .setColor(ee.wrongcolor)
-        .setDescription(`${emoji.msg.ERROR} You may seek from \`0\` - \`${player.queue.current.duration / 1000}\``)
-        return message.channel.send({embeds: [ttt]});
-      }
-      //seek to the position
-      player.seek(Number(args[0]) * 1000);
-      //send success message
-      const pp = new MessageEmbed()
-      .setDescription(`${emoji.msg.SUCCESS} Seeked song to: ${format(Number(args[0]) * 1000)}`)
-      .addField(`${emoji.msg.time} Progress: `, createBar(player))
-      .setColor("#2F3136")
-      return message.channel.send({embeds: [pp]});
-    } catch (e) {
-      console.log(String(e.stack).bgRed)
-      const emesdf = new MessageEmbed()
-			.setColor(ee.wrongcolor)
-			.setAuthor(`An Error Occurred`)
-			.setDescription(`\`\`\`${e.message}\`\`\``);
-			return message.channel.send({embeds: [emesdf]});
+	name: "seek",
+	aliases: [],
+	category: "Music",
+	description: "Seek the currently playing song",
+	args: true,
+    usage: "<10s || 10m || 10h>",
+    permission: [],
+    owner: false,
+    player: true,
+    inVoiceChannel: true,
+    sameVoiceChannel: true,
+	 execute: async (message, args, client, prefix) => {
+  
+		const player = message.client.manager.get(message.guild.id);
+
+        if (!player.queue.current) {
+            let thing = new MessageEmbed()
+                .setColor("RED")
+                .setDescription("There is no music playing.");
+            return message.channel.send({embeds: [thing]});
+        }
+
+        const time = ms(args[0])
+        const position = player.position;
+        const duration = player.queue.current.duration;
+
+        const emojiforward = message.client.emoji.forward;
+        const emojirewind = message.client.emoji.rewind;
+
+        const song = player.queue.current;
+        
+        if (time <= duration) {
+            if (time > position) {
+                player.seek(time);
+                let thing = new MessageEmbed()
+                    .setDescription(`${emojiforward} **Forward**\n[${song.title}](${song.uri})\n\`${convertTime(time)} / ${convertTime(duration)}\``)
+                    .setColor(message.client.embedColor)
+                    .setTimestamp()
+                return message.channel.send({embeds: [thing]});
+            } else {
+                player.seek(time);
+                let thing = new MessageEmbed()
+                    .setDescription(`${emojirewind} **Rewind**\n[${song.title}](${song.uri})\n\`${convertTime(time)} / ${convertTime(duration)}\``)
+                    .setColor(message.client.embedColor)
+                    .setTimestamp()
+          return message.channel.send({embeds: [thing]});
+            }
+        } else {
+            let thing = new MessageEmbed()
+                .setColor("RED")
+                .setDescription(`Seek duration exceeds Song duration.\nSong duration: \`${convertTime(duration)}\``);
+            return message.channel.send({embeds: [thing]});
+        }
+	
     }
-  }
 };

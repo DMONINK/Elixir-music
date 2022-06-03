@@ -6,7 +6,7 @@
         "SUCCESS" : "✅",
         "ARROW": "<a:arrow:902237053008351273>",
 
-       "prem": "<:elixir:791250129021173760>",
+       "prem": "<:Gaara:791250129021173760>",
        "DurationLine": "<:cf71458d5ac24fde9f604fc555642d5f:892035757978583070>", 
         "disabled" : "<:disabled:902237541594431568>",
         "enabled" : "<:ItemMusicNote:891215369279270913>",
@@ -81,7 +81,7 @@
         "show_current_track": "▶️"
       },
       "categories": {
-        "AnimatedDiscord": "<:elixir:791250129021173760>",
+        "AnimatedDiscord": "<:Gaara:791250129021173760>",
         "Settings": "<a:settings:902409566107623465>",
         "Playlist": "📝",
         "Playing": " <:ItemMusicNote:891215369279270913>",

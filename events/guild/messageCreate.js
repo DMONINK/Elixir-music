@@ -40,7 +40,7 @@ module.exports = async (client, message) => {
         if(matchedPrefix.includes(client.user.id)){
             const fff = new Discord.MessageEmbed()
             .setAuthor(client.user.username, client.user.displayAvatarURL({dynamic: true}), config.links.opmusicinv)
-            .setDescription(`**Prefix:** \`${prefix}\`\n**Developer:** \`DaisuKie.#0786, pranchiii#6924, \`\n**Servers: \`${client.guilds.cache.size}\`**\n\n**still updating Elixir, you can use music command on it.**`)
+            .setDescription(`**Prefix:** \`${prefix}\`\n**Developer:** \`DaisuKie.#0786, pranchiii#6924, \`\n**Servers: \`${client.guilds.cache.size}\`**\n\n**still updating Gaara, you can use music command on it.**`)
             .setColor(ee.color)
             return message.channel.send({embeds: [fff]});
         }

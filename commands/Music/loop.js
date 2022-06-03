@@ -1,74 +1,46 @@
-const {
-  MessageEmbed
-} = require(`discord.js`);
-const DBL = require('@top-gg/sdk');
-const config = require(`../../botconfig/config.json`);
-const ee = require(`../../botconfig/embed.json`);
-const emoji = require(`../../botconfig/emojis.json`);
-module.exports = {
-  name: `loop`,
-  category: `Music`,
-  aliases: [`repeat`, `l`],
-  description: `Repeats the current song`,
-  usage: `loopsong`,
-  parameters: {"type":"music", "activeplayer": true, "previoussong": false},
-  run: async (client, message, args, guildData, player, prefix) => {
-    try {
-     
+const { MessageEmbed } = require("discord.js");
 
-      //if no args send error
-      if (!args[0]) {
-        const tdk = new MessageEmbed()
-        .setColor(ee.wrongcolor)
-        .setTitle(`${emoji.msg.ERROR} Please add your method!`)
-        .setDescription(`\`loop song\`\nIt will loop the current **Track** endlessly!\n\`loop queue\`\nIt will loop the whole Queue will be repeated endlessly!`)
-        return message.channel.send({embeds: [tdk]})
-      }
-      //if arg is somehow song / track
-      if (args[0].toLowerCase() === `song` || args[0].toLowerCase() === `track` || args[0].toLowerCase() === `s` || args[0].toLowerCase() === `t`) {
-        //Create the Embed
-        let embed = new MessageEmbed()
-        .setDescription(`${emoji.msg.repeat_mode} Track loop ${player.trackRepeat ? `Disabled` : `Enabled`}`)
-        .setColor("#2F3136")
-        //If Queue loop is enabled add embed info + disable it
-        if (player.queueRepeat) {
-          player.setQueueRepeat(false);
+module.exports = {
+	name: "loop",
+    aliases: ['l'],
+    category: "Music",
+	description: "Toggle music loop",
+	args: false,
+    usage: "",
+    permission: [],
+    owner: false,
+    player: true,
+    inVoiceChannel: true,
+    sameVoiceChannel: true,
+	 execute: async (message, args, client, prefix) => {
+  
+		const player = message.client.manager.get(message.guild.id);
+
+        if (!player.queue.current) {
+            let thing = new MessageEmbed()
+                .setColor("RED")
+                .setDescription("There is no music playing.");
+            return message.channel.send({embeds: [thing]});
         }
-        //toggle track repeat to the reverse old mode
+		
+		const emojiloop = message.client.emoji.loop;
+
+        if (args.length && /queue/i.test(args[0])) {
+            player.setQueueRepeat(!player.queueRepeat);
+            const queueRepeat = player.queueRepeat ? "enabled" : "disabled";
+			let thing = new MessageEmbed()
+				.setColor(message.client.embedColor)
+				.setTimestamp()
+				.setDescription(`${emojiloop} Loop queue is now **${queueRepeat}**`)
+		   return message.channel.send({embeds: [thing]});
+        }
+
         player.setTrackRepeat(!player.trackRepeat);
-        //Send Success Message
-        return message.channel.send({embeds: [embed]})
-      }
-      //if input is queue
-      else if (args[0].toLowerCase() === `queue` || args[0].toLowerCase() === `qu` || args[0].toLowerCase() === `q`) {
-        //Create the Embed
-        let embed = new MessageEmbed()
-          .setDescription(`${emoji.msg.repeat_mode} Queue loop ${player.queueRepeat ? `Disabled` : `Enabled`}`)
-          .setColor("#2F3136")
-        //If Track loop is enabled add embed info + disable it
-        if (player.trackRepeat) {
-          player.setTrackRepeat(false);
-        }
-        //toggle queue repeat to the reverse old mode
-        player.setQueueRepeat(!player.queueRepeat);
-        //Send Success Message
-        return message.channel.send({embeds: [embed]});
-      }
-      //if no valid inputs, send error
-      else {
-        const ror = new MessageEmbed()
-        .setColor(ee.wrongcolor)
-        .setTitle(`${emoji.msg.ERROR} Please add your method!`)
-        .setDescription(`\`loop song\`\nIt will loop the current **Track** endlessly!\n\`loop queue\`\nIt will loop the whole Queue will be repeated endlessly!`)
-        return message.channel.send({embeds: [ror]});
-      }
-    } catch (e) {
-      console.log(String(e.stack).bgRed)
-			const emesdf = new MessageEmbed()
-			.setColor(ee.wrongcolor)
-			.setAuthor(`An Error Occurred`)
-			.setDescription(`\`\`\`${e.message}\`\`\``);
-			return message.channel.send({embeds: [emesdf]});
+        const trackRepeat = player.trackRepeat ? "enabled" : "disabled";
+		let thing = new MessageEmbed()
+			.setColor(message.client.embedColor)
+			.setTimestamp()
+			.setDescription(`${emojiloop} Loop track is now **${trackRepeat}**`)
+		    return message.channel.send({embeds: [thing]});
     }
-  }
 };

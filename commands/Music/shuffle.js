@@ -1,34 +1,37 @@
-const {
-  MessageEmbed
-} = require(`discord.js`);
-const config = require(`../../botconfig/config.json`);
-const ee = require(`../../botconfig/embed.json`);
-const emoji = require(`../../botconfig/emojis.json`);
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
-  name: `shuffle`,
-  category: `Music`,
-  aliases: [`mix`],
-  description: `Shuffles the Queue`,
-  usage: `shuffle`,
-  parameters: {"type":"music", "activeplayer": true, "previoussong": false},
-  run: async (client, message, args, guildData, player, prefix) => {
-    try{
-      //set into the player instance an old Queue, before the shuffle...
-      player.set(`beforeshuffle`, player.queue.map(track => track));
-      //shuffle the Queue
-      player.queue.shuffle();
-      //return success message
-      const opop = new MessageEmbed()
-      .setDescription(`${emoji.msg.shuffle} Shuffled the Queue`)
-      .setColor("#2F3136")
-      return message.channel.send({embeds: [opop]});
-    } catch (e) {
-      console.log(String(e.stack).bgRed)
-      const emesdf = new MessageEmbed()
-			.setColor(ee.wrongcolor)
-			.setAuthor(`An Error Occurred`)
-			.setDescription(`\`\`\`${e.message}\`\`\``);
-			return message.channel.send({embeds: [emesdf]});
+	name: "shuffle",
+    category: "Music",
+    description: "Shuffle queue",
+    args: false,
+    usage: "",
+    permission: [],
+    owner: false,
+    player: true,
+    inVoiceChannel: true,
+    sameVoiceChannel: true,
+	 execute: async (message, args, client, prefix) => {
+    
+		const player = message.client.manager.get(message.guild.id);
+
+        if (!player.queue.current) {
+            let thing = new MessageEmbed()
+                .setColor("RED")
+                .setDescription("There is no music playing.");
+            return message.channel.send({embeds: [thing]});
+        }
+
+
+        player.queue.shuffle();
+        
+        const emojishuffle = message.client.emoji.shuffle;
+
+        let thing = new MessageEmbed()
+            .setDescription(`${emojishuffle} Shuffled the queue`)
+            .setColor(message.client.embedColor)
+            .setTimestamp()
+        return message.channel.send({embeds: [thing]}).catch(error => message.client.logger.log(error, "error"));
+	
     }
-  }
 };
