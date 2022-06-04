@@ -47,15 +47,18 @@
     "serverDeaf": true
   },
   "links": {
-    "server": "https://discord.gg/zvynSK7Crk",
+    "server": "https://discord.gg/DZxEw7YvUk",
     "opbotinv": "https://discord.com/oauth2/authorize?client_id=909321103766343720&scope=bot&permissions=9",
     "opmusicinv": "https://discord.com/oauth2/authorize?client_id=909321103766343720&scope=bot&permissions=9",
     "opmusic2inv": "https://discord.com/oauth2/authorize?client_id=909321103766343720&scope=bot&permissions=9",
     "opmusic3inv": "https://discord.com/oauth2/authorize?client_id=909321103766343720&scope=bot&permissions=9",
-    "opmusicvote": "https://discord.gg/zvynSK7Crk"
+    "opmusicvote": "https://discord.gg/DZxEw7YvUk"
   },
   "ownerIDS": [
     "612803327675334673",
-    "730424922639302693"
+    "852612839629127711",
+    "767610098436145202",
+    "852786064413425695",
+      "728183506953437185"
   ]
 }

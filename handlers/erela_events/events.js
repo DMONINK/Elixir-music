@@ -84,7 +84,7 @@ module.exports = (client) => {
       // playANewTrack(client,player,track);
       var embed = new MessageEmbed().setColor(ee.color)
       embed.setColor(ee.color)
-      embed.setTitle("<:Gaara:791250129021173760> NOW PLAYING")
+      embed.setTitle("<:elixir:791250129021173760> NOW PLAYING")
       embed.setDescription(`${emoji.msg.playing} [\`${track.title}\`](${track.uri})\n\nRequested By: <@${track.requester.id}> | Duration: \`❯ ${track.isStream ? `LIVE STREAM` : format(track.duration)}\``)
 
       const guildData = await findOrCreateGuild(client, { id: player.guild });
