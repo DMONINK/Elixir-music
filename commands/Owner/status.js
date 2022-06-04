@@ -16,7 +16,7 @@ module.exports = {
     if (!config.ownerIDS.includes(message.author.id)) {
       const nop = new MessageEmbed()
       .setColor(ee.wrongcolor)
-      .setDescription(`${emoji.msg.ERROR} You are not allowed to run this command! Only Elixir Dev is allowed to run this command`)
+      .setDescription(`${emoji.msg.ERROR} You are not allowed to run this command! Only Gaara Dev is allowed to run this command`)
       return message.channel.send({embeds: [nop]})
     }
     try {

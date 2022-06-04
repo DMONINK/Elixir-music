@@ -1,7 +1,7 @@
 {
-  "name": "Elixir music",
+  "name": "Gaara music",
   "version": "7.3.4",
-  "description": "Elixir Bot",
+  "description": "Gaara Bot",
   "main": "index.js",
   "start": "node .",
   "dependencies": {

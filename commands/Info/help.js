@@ -16,6 +16,10 @@ module.exports = {
     usage: "help [Command]",
     description: "Returns all Commmands, or one specific command",
     run: async (client, message, args, guildData, player, prefix) => {
+      let micky = client.users.cache.get(`612803327675334673`)
+      if (!micky) {
+        micky = await client.users.fetch('612803327675334673').catch(() => null);
+      }
 
          if (args[0]) {
         const embed = new MessageEmbed()
@@ -40,7 +44,10 @@ module.exports = {
           .setThumbnail(client.user.displayAvatarURL())
           .setTimestamp()
           .addField(`${emoji.categories[category]} **${category} - (${client.commands.filter((cmd) => cmd.category === category).size})**`, catcommands)
-          .setFooter(ee.footertext, client.user.displayAvatarURL());
+          .setFooter({
+            text: `Made with ❤️ by ${micky.tag}`,
+            iconURL: micky.displayAvatarURL({ dynamic: true })
+        })
         
           return message.channel.send({embeds: [embed]})
         }
@@ -58,7 +65,7 @@ module.exports = {
         }
         if (cmd.useage) {
           embed.addField("**Useage**", `\`${prefix}${cmd.useage}\``);
-          embed.setFooter("Elixir");
+          embed.setFooter("Gaara");
         }
         embed.setColor(ee.color)
         return message.channel.send({embeds: [embed]});
@@ -66,14 +73,14 @@ module.exports = {
 
         
     let helpmenu = new MessageEmbed()
-        .setAuthor(`Elixir Help Menu`, ee.footericon)
+        .setAuthor(`Gaara Help Menu`, ee.footericon)
         .setDescription(`
 **Hey ${message.author}, I am ${client.user}**.
  
-**Elixir is the easy-to-use Discord bot for all your needs.**
+**Gaara is the easy-to-use Discord bot for all your needs.**
 
         
-**${emoji.categories.AnimatedDiscord} Help related to Elxir's commands**
+**${emoji.categories.AnimatedDiscord} Help related to Gaara's commands**
 
 **${emoji.categories.Playlist} \`:\` Custom Playlist**
 **${emoji.categories.AstrozMusic} \`:\` Filters**
@@ -86,14 +93,17 @@ module.exports = {
 [Invite](${config.links.opmusicinv}) ● [Support Server](${config.links.server}) 
  `)
 
-        .setFooter(ee.footertext, ee.footericon)
+        .setFooter({
+                    text: `Made with ❤️ by ${micky.tag}`,
+                    iconURL: micky.displayAvatarURL({ dynamic: true })
+                })
         .setColor(`#303037`)
 
         const row = new MessageActionRow()
         .addComponents(
             new MessageSelectMenu()
                 .setCustomId('helpop')
-                .setPlaceholder('❯ Elixir Help Menu!')
+                .setPlaceholder('❯ Gaara Help Menu!')
                 .addOptions([
                 {
                     label: 'Custom Playlist',
@@ -121,7 +131,7 @@ module.exports = {
                 },
                 {
                     label: 'Settings',
-                    description: 'Elixir Settings',
+                    description: 'Gaara Settings',
                     value: 'fifth',
                     emoji: emoji.categories.Settings
                 },

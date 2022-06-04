@@ -1,6 +1,6 @@
 {
-  "token": "OTA5MzIxMTAzNzY2MzQzNzIw.GPsY1E.znepjKRQhg4-aIleB-jtIz4SyDDBHlqSc7kuE",
-  "mongo": "mongodb+srv://gojoo:gojoo@cluster0.s4mav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  "token": "OTEzNDgxODI3NTQzNTU2MTE2.Gu0e6T.yYN5EfCsgolHXnCtFso7cI61N7AkX9CHqtwOUU",
+  "mongo": "mongodb+srv://arya:demon@cluster0.m9hvb.mongodb.net/myproject?retryWrites=true&w=majority",
   "prefix": "m!",
   "clientsettings": {
     "nodes": [
